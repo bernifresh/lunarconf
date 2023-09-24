@@ -13,6 +13,7 @@ lvim.builtin.nvimtree.setup.view = {
 
 -- Plugins
 lvim.plugins = {
+  "mfussenegger/nvim-jdtls",
   {
     "sindrets/diffview.nvim",
     event = "BufRead",
@@ -64,6 +65,16 @@ vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "groovyls" }
 lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(
   function(server) return server ~= "gradle_ls" end,
   lvim.lsp.automatic_configuration.skipped_servers)
+
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "jdtls" })
+lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(
+  function(server) return server ~= "java" end,
+  lvim.lsp.automatic_configuration.skipped_servers)
+
+-- Java configuration
+lvim.builtin.treesitter.ensure_installed = {
+  "java",
+}
 
 -- CSharp (omnisharp) configuration
 require("lvim.lsp.manager").setup("omnisharp")
