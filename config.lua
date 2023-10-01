@@ -11,8 +11,18 @@ lvim.builtin.nvimtree.setup.view = {
   adaptive_size = true,
 }
 
+-- Colorscheme global variables for "rafamadriz/neon" scheme
+vim.g.neon_style = "dark"
+vim.g.neon_italic_keyword = true
+
+-- Colorscheme
+lvim.colorscheme = "neon"
+
 -- Plugins
 lvim.plugins = {
+  { "rafamadriz/neon" },
+  'shaunsingh/moonlight.nvim',
+  { "lunarvim/colorschemes" },
   "mfussenegger/nvim-jdtls",
   {
     "sindrets/diffview.nvim",
