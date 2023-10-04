@@ -4,6 +4,13 @@
 -- Forum: https://www.reddit.com/r/lunarvim/
 -- Discord: https://discord.com/invite/Xb9B4Ny
 
+-- keybindings
+local opts = { noremap = true, silent = true }
+local keymap = vim.api.nvim_set_keymap
+keymap("n", "<A-Left>", ":BufferLineCyclePrev<CR>", opts)
+keymap("n", "<A-Right>", ":BufferLineCycleNext<CR>", opts)
+keymap("n", "<A-f>", ":NvimTreeFocus<CR>", opts)
+
 -- General Settings
 lvim.autosave = true
 lvim.format_on_save = true
@@ -20,6 +27,7 @@ lvim.colorscheme = "neon"
 
 -- Plugins
 lvim.plugins = {
+  { "nvim-treesitter/nvim-treesitter-angular" },
   { "rafamadriz/neon" },
   'shaunsingh/moonlight.nvim',
   { "lunarvim/colorschemes" },
@@ -58,6 +66,40 @@ lvim.plugins = {
   },
 }
 
+-- CSharp Config
+local enabled_csharp_ls = "omnisharp"
+local disabled_csharp_ls = "csharp_ls"
+lvim.lsp.installer.setup.ensure_installed =
+    vim.list_extend(lvim.lsp.installer.setup.ensure_installed, { enabled_csharp_ls })
+lvim.lsp.automatic_configuration.skipped_servers =
+    vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { disabled_csharp_ls })
+
+-- Configure omnisharp
+if enabled_csharp_ls == "omnisharp" then
+  local omnisharp_opts = {}
+  local status_ok, omnisharp_extended = pcall(require, "omnisharp_extended")
+  if status_ok then
+    omnisharp_opts = {
+      handlers = {
+        ["textDocument/definition"] = omnisharp_extended.handler,
+      },
+      organize_imports_on_format = true,
+      sdk_include_prereleases = false,
+      enable_roslyn_analyzers = true,
+      analyze_open_documents_only = true,
+    }
+  end
+  require("lvim.lsp.manager").setup("omnisharp", omnisharp_opts)
+  --
+  -- OmniSharp is used and configured. Return.
+  return
+end
+
+--
+-- Omnisharp not used
+--
+local csharp_ls_opts = {}
+require("lspconfig")[enabled_csharp_ls].setup(csharp_ls_opts)
 
 
 -- Skip LSP servervs
@@ -86,15 +128,12 @@ lvim.builtin.treesitter.ensure_installed = {
   "java",
 }
 
--- CSharp (omnisharp) configuration
-require("lvim.lsp.manager").setup("omnisharp")
-
 -- C Lang configuration
 require("lvim.lsp.manager").setup("ccls")
 
 -- Move between buffer views
-lvim.keys.normal_mode["<A-Right>"] = ":BufferLineCycleNext<CR>"
-lvim.keys.normal_mode["<A-Left>"] = ":BufferLineCyclePrev<CR>"
+keymap("n", "<A-Left>", ":BufferLineCyclePrev<CR>", opts)
+keymap("n", "<A-Right>", ":BufferLineCycleNext<CR>", opts)
 
--- Nvim Tree settings
-lvim.keys.normal_mode["<A-f>"] = ":NvimTreeFocus<CR>"
+-- Nvim Tree keybinding settings
+keymap("n", "<A-f>", ":NvimTreeFocus<CR>", opts)
